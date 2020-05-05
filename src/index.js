@@ -13,17 +13,16 @@ const publicDirectoryPath = path.join(__dirname,'../public')
 
 app.use(express.static(publicDirectoryPath))
 
-let count = 0
 
+const messageToClient = 'Welcome!'
 
 io.on('connection', (socket) => {
     console.log('New WeSocket Connection')
 
-    socket.emit('countUpdated', count)
+    socket.emit('sameName', messageToClient)
 
-    socket.on('increment', () => {
-        count ++
-        io.emit('countUpdated',count)
+    socket.on('commonName', (messageFromClient) => {
+        io.emit('sameName',messageFromClient)
     })
 })
 
