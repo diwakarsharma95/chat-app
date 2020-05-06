@@ -28,6 +28,9 @@ io.on('connection', (socket) => {
     socket.on('commonName', (messageFromClient) => {
         io.emit('sameName',messageFromClient)
     })
+    socket.on('sendLocation',({latitude,longitude}) => {
+        io.emit('sameName',`https://google.com/maps?q=${latitude},${longitude}`)
+    })
     socket.on('disconnect',() => {
         io.emit('sameName', 'A user has left')
     })
