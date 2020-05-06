@@ -7,7 +7,12 @@ socket.on('sameName', (messageFromServer) => {
 document.querySelector('#message-form').addEventListener('submit', (e) => {
     e.preventDefault()
     const messageToServer = e.target.elements.message.value
-    socket.emit('commonName', messageToServer)
+    socket.emit('commonName', messageToServer, (callbackMessageFromServer) => {
+        if(callbackMessageFromServer){
+            return console.log(callbackMessageFromServer)
+        }
+        console.log('Message delivered!')
+    })
 })
 document.querySelector('#send-location').addEventListener('click', () => {
     if(!navigator.geolocation){
@@ -17,6 +22,6 @@ document.querySelector('#send-location').addEventListener('click', () => {
         socket.emit('sendLocation',{
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
-        })
+        }, (callbackMessageFromServer) => console.log(callbackMessageFromServer))
     })
 }) 
