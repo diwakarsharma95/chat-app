@@ -3,6 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
+const {generateMessage} = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)
@@ -18,13 +19,13 @@ app.use(express.static(publicDirectoryPath))
 
 
 
-const messageToClient = 'Welcome!'
+
 
 io.on('connection', (socket) => {
     console.log('New WeSocket Connection')
 
-    socket.emit('sameName', messageToClient)
-    socket.broadcast.emit('sameName', 'A new user has joined')
+    socket.emit('sameName', generateMessage('Welcome!'))
+    socket.broadcast.emit('sameName', generateMessage('A new user has joined'))
 
     socket.on('commonName', (messageFromClient, callback) => {
         const filter = new Filter()
@@ -32,7 +33,7 @@ io.on('connection', (socket) => {
         if(filter.isProfane(messageFromClient)){
             return callback('Profanity is not allowed!')
         }
-        io.emit('sameName',messageFromClient)
+        io.emit('sameName',generateMessage(messageFromClient))
         callback()
     })
     socket.on('sendLocation',({latitude,longitude},callback) => {
@@ -40,7 +41,7 @@ io.on('connection', (socket) => {
         callback('Location shared')
     })
     socket.on('disconnect',() => {
-        io.emit('sameName', 'A user has left')
+        io.emit('sameName', generateMessage('A user has left'))
     })
 })
 
