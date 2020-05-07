@@ -3,7 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
-const {generateMessage} = require('./utils/messages')
+const {generateMessage, generateLocationMessage} = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)
@@ -36,18 +36,14 @@ io.on('connection', (socket) => {
         io.emit('sameName',generateMessage(messageFromClient))
         callback()
     })
-    socket.on('sendLocation',({latitude,longitude},callback) => {
-        io.emit('locationMessage',`https://google.com/maps?q=${latitude},${longitude}`)
+    socket.on('sendLocation',({latitude, longitude},callback) => {
+        io.emit('locationMessage',generateLocationMessage({latitude,longitude}))
         callback('Location shared')
     })
     socket.on('disconnect',() => {
         io.emit('sameName', generateMessage('A user has left'))
     })
 })
-
-
-
-
 
 
 

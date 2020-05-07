@@ -21,10 +21,11 @@ socket.on('sameName', (messageFromServer) => {
     $messages.insertAdjacentHTML('beforeend', html)
 })
 
-socket.on('locationMessage',(url)=>{
-    console.log(url)
+socket.on('locationMessage',(position)=>{
+    console.log(position)
     const html = Mustache.render(locationTemplate, {
-        location: url
+        url: position.url,
+        createdAt: moment(position.createdAt).format('hh:mm a')
     })
     $location.insertAdjacentHTML('beforeend', html)
 })
@@ -57,8 +58,8 @@ $locationButton.addEventListener('click', () => {
     navigator.geolocation.getCurrentPosition((position) => {
         socket.emit('sendLocation',{
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-        }, (callbackMessageFromServer) => {
+            longitude: position.coords.longitude,
+        },(callbackMessageFromServer) => {
             $locationButton.removeAttribute('disabled')     
             console.log(callbackMessageFromServer)
         })
