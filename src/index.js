@@ -24,8 +24,12 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection', (socket) => {
     console.log('New WeSocket Connection')
 
-    socket.emit('sameName', generateMessage('Welcome!'))
-    socket.broadcast.emit('sameName', generateMessage('A new user has joined'))
+    socket.on('join', ({username, room}) => {
+        socket.join(room)
+
+        socket.emit('sameName', generateMessage('Welcome!'))
+        socket.broadcast.to(room).emit('sameName', generateMessage(`${username} has joined`))
+    })
 
     socket.on('commonName', (messageFromClient, callback) => {
         const filter = new Filter()
@@ -33,7 +37,7 @@ io.on('connection', (socket) => {
         if(filter.isProfane(messageFromClient)){
             return callback('Profanity is not allowed!')
         }
-        io.emit('sameName',generateMessage(messageFromClient))
+        io.to('Brisbane').emit('sameName',generateMessage(messageFromClient))
         callback()
     })
     socket.on('sendLocation',({latitude, longitude},callback) => {
