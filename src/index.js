@@ -34,28 +34,32 @@ io.on('connection', (socket) => {
 
         socket.join(user.room)
 
-        socket.emit('sameName', generateMessage('Welcome!'))
-        socket.broadcast.to(user.room).emit('sameName', generateMessage(`${user.username} has joined`))
+        socket.emit('sameName', generateMessage('Admin','Welcome!'))
+        socket.broadcast.to(user.room).emit('sameName', generateMessage('Admin', `${user.username} has joined`))
         callback()
     })
 
     socket.on('commonName', (messageFromClient, callback) => {
+        const user = getUser(socket.id)
         const filter = new Filter()
 
         if(filter.isProfane(messageFromClient)){
             return callback('Profanity is not allowed!')
         }
-        io.to('Brisbane').emit('sameName',generateMessage(messageFromClient))
+        io.to(user.room).emit('sameName',generateMessage(user.username,messageFromClient))
         callback()
     })
+
+
     socket.on('sendLocation',({latitude, longitude},callback) => {
-        io.emit('locationMessage',generateLocationMessage({latitude,longitude}))
+        const user =  getUser(socket.id)
+        io.to(user.room).emit('locationMessage',generateLocationMessage(user.username,{latitude,longitude}))
         callback('Location shared')
     })
     socket.on('disconnect',() => {
         const user = removeUser(socket.id)
         if(user){
-            io.to(user.room).emit('sameName', generateMessage(`${user.username} has left`))
+            io.to(user.room).emit('sameName', generateMessage('Admin',`${user.username} has left`))
         }
     })
 })

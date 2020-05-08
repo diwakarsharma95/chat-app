@@ -17,8 +17,9 @@ const locationTemplate = document.querySelector('#location-template').innerHTML
 const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true})
 
 socket.on('sameName', (messageFromServer) => {
-    console.log(messageFromServer)
+    console.log(messageFromServer.username)
     const html = Mustache.render(messageTemplate, {
+        username: messageFromServer.username,
         message: messageFromServer.text,
         createdAt: moment(messageFromServer.createdAt).format('hh:mm a')
     })
@@ -28,6 +29,7 @@ socket.on('sameName', (messageFromServer) => {
 socket.on('locationMessage',(position)=>{
     console.log(position)
     const html = Mustache.render(locationTemplate, {
+        username: position.username,
         url: position.url,
         createdAt: moment(position.createdAt).format('hh:mm a')
     })
@@ -49,7 +51,7 @@ $messageForm.addEventListener('submit', (e) => {
         $messageFormInput.focus()
 
         if(callbackMessageFromServer){
-            return console.log(callbackMessageFromServer)
+            return alert(callbackMessageFromServer)
         }
         console.log('Message delivered!')
     })
